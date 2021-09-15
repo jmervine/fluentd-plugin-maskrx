@@ -16,12 +16,16 @@ module Fluent::Plugin
 
     def configure(conf)
       super
+
+      @mask_config_list.each do |config|
+        raise Fluent::ConfigError, "pattern is required" if config.pattern.nil?
+      end
     end
 
     def filter(_, _, record)
-      @mask_config_list.each do |config|
-        raise Fluent::ConfigError, "pattern is required" if config.pattern.nil?
+      log.debug("processing record: #{record}")
 
+      @mask_config_list.each do |config|
         record = mask_record(config, record)
       end
 
@@ -50,6 +54,8 @@ module Fluent::Plugin
       match.each do |m|
         value.gsub!(m, mask)
       end
+
+      log.debug("applied pattern=#{pattern} to value=#{value}")
 
       return value
     end
