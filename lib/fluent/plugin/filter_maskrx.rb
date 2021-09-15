@@ -23,7 +23,7 @@ module Fluent::Plugin
     end
 
     def filter(_, _, record)
-      log.debug("processing record: #{record}")
+      log.debug("plugin=maskrx at=filter record=\"#{record}\"")
 
       @mask_config_list.each do |config|
         record = mask_record(config, record)
@@ -35,6 +35,7 @@ module Fluent::Plugin
     protected
     def mask_record(config, record)
       keys = (config.keys.nil? ? record.keys : config.keys)
+      log.debug("plugin=maskrx at=mask_record keys=\"#{keys}\"")
 
       keys.each do |key|
         record[key] = mask_key_value(config.pattern, config.mask, record[key]) unless record[key].nil?
@@ -55,7 +56,7 @@ module Fluent::Plugin
         value.gsub!(m, mask)
       end
 
-      log.debug("applied pattern=#{pattern} to value=#{value}")
+      log.debug("plugin=maskrx at=mask_key_value pattern=#{pattern} value=#{value}")
 
       return value
     end
