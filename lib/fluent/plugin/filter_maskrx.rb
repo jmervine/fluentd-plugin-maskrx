@@ -17,9 +17,14 @@ module Fluent::Plugin
     def configure(conf)
       super
 
+      patterns = []
       @mask_config_list.each do |config|
         raise Fluent::ConfigError, "pattern is required" if config.pattern.nil?
+
+        patterns.push(config.pattern)
       end
+
+      log.info("pluginx=maskrx at=configure patterns=\"#{patterns}}\"")
     end
 
     def filter(_, _, record)
@@ -56,7 +61,7 @@ module Fluent::Plugin
         value.gsub!(m, mask)
       end
 
-      log.debug("plugin=maskrx at=mask_key_value pattern=#{pattern} value=#{value}")
+      log.debug("plugin=maskrx at=mask_key_value pattern=#{pattern} value=\"#{value}\"")
 
       return value
     end
