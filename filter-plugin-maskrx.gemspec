@@ -4,7 +4,7 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 
 Gem::Specification.new do |spec|
   spec.name          = "fluent-plugin-maskrx"
-  spec.version       = "0.0.1-pre1"
+  spec.version       = "0.0.1.beta1"
   spec.authors       = ["Joshua Mervine"]
   spec.email         = ["joshua@mervine.net"]
   spec.summary       = %q{Fluentd filter plugin to mask strings within records.}
