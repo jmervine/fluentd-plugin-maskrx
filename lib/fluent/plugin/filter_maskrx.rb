@@ -30,17 +30,37 @@ module Fluent::Plugin
     def filter(_, _, record)
       log.debug("plugin=maskrx at=filter record=\"#{record}\"")
 
+      mask_record(config, record)
+    end
+
+    def filter_stream(tag, es)
+      new_es = Fluent::MultiEventStream.new
+      es.each do |time, record|
+        log.debug("plugin=maskrx at=filter_stream record=\"#{record}\"")
+
+        new_es.add(time, mask_record(record))
+      end
+
+      new_es
+    end
+
+    protected
+    def mask_record(record)
       @mask_config_list.each do |config|
-        record = mask_record(config, record)
+        record = mask_entry(config, record)
       end
 
       record
     end
 
-    protected
-    def mask_record(config, record)
-      keys = (config.keys.nil? ? record.keys : config.keys)
-      log.debug("plugin=maskrx at=mask_record keys=\"#{keys}\"")
+    def mask_entry(config, record)
+      keys = if config.keys.nil? || config.keys.empty?
+               record.keys
+             else
+               config.keys
+             end
+
+      log.debug("plugin=maskrx at=mask_entry keys=\"#{keys}\"")
 
       keys.each do |key|
         record[key] = mask_key_value(config.pattern, config.mask, record[key]) unless record[key].nil?
